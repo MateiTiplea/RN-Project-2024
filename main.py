@@ -21,8 +21,7 @@ def get_default_device():
     return torch.device("cpu")
 
 
-get_default_device()
-device = torch.device("cuda")
+device = get_default_device()
 cudnn.benchmark = True
 pin_memory = True
 enable_half = True  # Disable for CPU, it is slower!
@@ -88,12 +87,6 @@ class CIFAR100_noisy_fine(Dataset):
 mean = (0.507, 0.4865, 0.4409)
 sd = (0.2673, 0.2564, 0.2761)
 
-# mean = (0.5071, 0.4867, 0.4408)
-# sd = (0.2675, 0.2565, 0.2761)
-
-# mean = (0.4914, 0.4822, 0.4465)
-# sd = (0.2023, 0.1994, 0.2010)
-
 basic_transforms = v2.Compose(
     [
         v2.ToImage(),
@@ -131,8 +124,16 @@ test_loader = DataLoader(test_set, batch_size=500, pin_memory=pin_memory)
 
 model = timm.create_model("resnext50_32x4d", pretrained=True)
 model.fc = nn.Linear(2048, 100)
+
+# model = timm.create_model("convnext_base", pretrained=True)
+# model.head = nn.Sequential(
+#     nn.AdaptiveAvgPool2d((1, 1)),
+#     nn.Flatten(),
+#     nn.Linear(model.num_features, 100),
+# )
+
 model = model.to(device)
-# model = torch.jit.script(model)  # does not work for this model
+# model = torch.jit.script(model)
 criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
 optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9, weight_decay=5e-4)
 
