@@ -1,4 +1,5 @@
 fii-atnn-2024-project-noisy-cifar-100/*
+checkpoints/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
